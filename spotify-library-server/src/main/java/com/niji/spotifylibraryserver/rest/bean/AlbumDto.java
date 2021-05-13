@@ -1,25 +1,24 @@
 package com.niji.spotifylibraryserver.rest.bean;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
-@Accessors
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlbumDto {
 
     // Server api specific data
-    public Long id;
-    public String tag;
-    public boolean favorite;
+    private Long id;
+    private String tag;
+    private boolean favorite;
 
     // Spotify data
-    public String idSpotify;
-    public String title;
-    public String artists;
-    public Integer duration;
-    public String releaseDate;
-    public String imageUrl;
+    private String idSpotify;
+    private String title;
+    private String artists;
+    private Integer duration;
+    private String releaseDate;
+    private String imageUrl;
 }

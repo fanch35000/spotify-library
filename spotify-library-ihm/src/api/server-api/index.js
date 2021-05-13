@@ -148,7 +148,7 @@ function deleteAlbum(item) {
 
 var ServerApi = new Vue({
   data : {
-    albumsUri : "http://localhost:8080/albums",
+    albumsUri : "http://localhost:8080/rest/v0/albums",
   },
   methods: {
     getAlbums() {
