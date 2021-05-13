@@ -35,9 +35,19 @@
       </v-col>
       <v-col cols="auto">
         <div v-if="listIdsSelectedToTag.length>0" style="min-width:280px">
-          <v-icon small @click="uncheckAll()">far fa-check-square</v-icon>
-          <input class="form-control" v-model="tagName" placeholder="tag">
-          <v-icon small @click="saveTagForAllIds()">far fa-save</v-icon>
+        
+          <v-form ref="formTag" v-model="validTag" lazy-validation>
+            <v-text-field v-model="tagName" :counter="10" :rules="tagRules" label="Tag" required>
+              <template slot="prepend">
+                <v-icon small @click="uncheckAll()">far fa-check-square</v-icon>
+              </template>
+              <template slot="append">
+                <v-icon small style="padding:3px" @click="resetTag()">fa-times-circle</v-icon>
+                <v-icon small style="padding:3px" @click="saveTagForAllIds()">far fa-save</v-icon>
+              </template>
+            </v-text-field>
+          </v-form>
+        
         </div>
       </v-col>
     </v-row>
@@ -58,7 +68,13 @@ import {_} from 'vue-underscore'
     },
 
     data: () => ({
-        tagName: "",
+        validTag: false,
+        tagName: null,
+        tagRules: [
+          v => !!v || 'Tag is required',
+          v => (v && v.length <= 10) || 'Tag must be less than 10 characters',
+        ],
+        
         listIdsSelectedToTag: [],
 
         headers: [
@@ -90,20 +106,27 @@ import {_} from 'vue-underscore'
         }
       },
       uncheckAll(){
+        this.resetTag()
         this.listIdsSelectedToTag = []
       },
       saveTagForAllIds(){
-        let listIdsSelected = this.listIdsSelectedToTag;
-        
-        // Find all the albums affected by the tag
-        let albumToUpdate = _.filter(this.albums, function(album){return _.contains(listIdsSelected, album.id)});
-        
-        // Update each album
-        _.each(albumToUpdate, (album)=>{
-          ServerApi.setTag(this.tagName, album)
-        });
+        if(this.$refs.formTag.validate()){
+          let listIdsSelected = this.listIdsSelectedToTag;
+          
+          // Find all the albums affected by the tag
+          let albumToUpdate = _.filter(this.albums, function(album){return _.contains(listIdsSelected, album.id)});
+          
+          // Update each album
+          _.each(albumToUpdate, (album)=>{
+            ServerApi.setTag(this.tagName, album)
+          });
 
-        this.listIdsSelectedToTag = []
+          this.listIdsSelectedToTag = []
+          this.resetTag()
+        }
+      },
+      resetTag() {
+        this.tagName = "";
       },
       isSelected(item){
         return _.contains(this.listIdsSelectedToTag, item.id)
